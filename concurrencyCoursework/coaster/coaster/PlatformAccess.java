@@ -16,7 +16,7 @@ public class PlatformAccess {
   public synchronized void arrive() throws InterruptedException {
     // complete implementation
     while (carIsWaitingAtPlatform) wait();
-      carIsWaitingAtPlatform = true;
+    carIsWaitingAtPlatform = true;
     notifyAll();
   }
 

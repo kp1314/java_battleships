@@ -6,7 +6,7 @@ const MCar = 4
 LOCK = (aquire -> release -> LOCK).
 
 //the goNow button
-BUTTON = goNow -> BUTTON.
+BUTTON = (goNow -> BUTTON).
 
 // models passenger arrival at the platform
 PASSENGERS = (newPassenger -> PASSENGERS).
@@ -18,6 +18,8 @@ CONTROL[count:0..Max][carSize:0..MCar]
     = (when (count < Max) 
             newPassenger  -> CONTROL[count+1][carSize]
       |requestPassenger[n:1..MCar] -> CONTROL[count][n]
+      |when (carSize > 0 && count < carSize)
+            goNow -> CONTROL[count][count]
       |when (carSize > 0 && count >= carSize) 
             getPassenger[carSize] -> CONTROL[count-carSize][0] 
       ).
@@ -35,9 +37,9 @@ PLATFORMACCESS = ({arrive,depart} -> PLATFORMACCESS).
 // system with two coaster cars with capacity two and three
 ||ROLLERCOASTER
          = (PASSENGERS 
-           || car[1..2]::(CONTROLLER || PLATFORMACCESS) 
+           || car[1..2]::(CONTROLLER || BUTTON || PLATFORMACCESS) 
            || car[1..2]::LOCK
            || car[1]:COASTERCAR(2) 
            || car[2]:COASTERCAR(3)
            )
-           /{newPassenger/car[1..2].newPassenger}.
+           /{newPassenger/car[1..2].newPassenger,goNow/car[1..2].goNow}.
